@@ -288,7 +288,11 @@ def draw_on_image(undist, warped_img, left_fit, right_fit, left_fitx, right_fitx
 
 #### 1. Provide a link to your final video output.  Your pipeline should perform reasonably well on the entire project video (wobbly lines are ok but no catastrophic failures that would cause the car to drive off the road!).
 
-Here's a [link to my video result](./project_video.mp4)
+After implementing all the pipeline steps, I created a `ProcessLine()` class for processing video feed. Same functions are applied in order and final video output is saved.
+Algorith seems to work fairly good on video feed. Lines are correctly determined and radius of curvature is seems to be correct, at least in order of magnitude.  
+
+Here's a [link to my video result](https://youtu.be/IvSUNDfjaII) 
+
 
 ---
 
@@ -296,4 +300,19 @@ Here's a [link to my video result](./project_video.mp4)
 
 #### 1. Briefly discuss any problems / issues you faced in your implementation of this project.  Where will your pipeline likely fail?  What could you do to make it more robust?
 
-Here I'll talk about the approach I took, what techniques I used, what worked and why, where the pipeline might fail and how I might improve it if I were going to pursue this project further.  
+Compared to simple lane finding project (Project-1) this pipeline work better on curved roads under different lighting conditions. However, pipeline tuning (mainly thresholding) is done only considering this video feed.
+It will probably not work well under different color lanes, at night, rain-snow or no lanes at all! And, it is very hard to generalize the tuning parameters for all possible conditions.
+This project was a good example for traditional computer vision implementation. For deeper and more robust perception solutions deep learning and 
+semantic segmentation could be a solution.
+One additional thing I can (maybe should) make is a sanity check for processing frames. There are cases where, thresholding may fail or polynomial may fail/poorly done which requires a sanity check in order to skip those frames and 
+continue with the last good perception pipeline results. I initially created a function for this, but I did not have enough time to fully implement.
+
+Some possible sanity checks (for further use maybe):
+1. Lane parallelism
+2. Radius of Curvature check both between lanes and thresholding with maximum-minimum values
+3. Some sort of thresholding method for histogram calculation. (If enough number of lane pixels are not detected.)
+
+
+Thanks Udacity team for this high level challenge.
+
+
