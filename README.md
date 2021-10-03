@@ -21,7 +21,7 @@ The goals / steps of this project are the following:
 
 [image1]: ./output_images/undistort_chessboard.png "Chessboard Image Distortion"
 [image2]: ./output_images/undistort_testimage.png "Raw Test Image Example"
-[image3]: ./output_images/thresolding.png "Thresholding"
+[image3]: ./output_images/thresholding.png "Thresholding"
 [image4]: ./output_images/perspective_transform.png "Perspective Transform"
 [image5]: ./output_images/polynomial_fit.png "Polynomial Fit"
 [image6]: ./output_images/radius_of_curvature.png "Reference image"
@@ -45,7 +45,7 @@ You're reading it!
 
 #### 1. Briefly state how you computed the camera matrix and distortion coefficients. Provide an example of a distortion corrected calibration image.
 
-The code for this step is contained in the first code cell of the IPython notebook located in "./examples/P4_ALF.ipynb" .  
+The code for this step is contained in the first code cell of the IPython notebook named "P4_ALF.ipynb" .  
 
 First I imported all the necessary libraries for pipeline to work on both pictures and videos.
 
@@ -67,7 +67,7 @@ img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB) #imread reads in BGR
 
 undistorted = cv2.undistort(img, mtx, dist, None, mtx)
 ```
-to obtain undistorted test image.
+to obtain undistorted test image. As camera lens is not causing too much distortion, it is hard to capture it at first look. But, it is there!
 ![alt text][image2]
 
 #### 2. Describe how (and identify where in your code) you used color transforms, gradients or other methods to create a thresholded binary image.  Provide an example of a binary image result.
@@ -182,14 +182,14 @@ After trying different configurations I have used gradient on x and y direction,
 The code for my perspective transform includes a function called `transform_image()`. Here I selected source and destination points
 to get the birds eye view. FUnction returns wih transformed image and corresponding M and Minv transformation matrices for later use.
 
-Hre is the selected source and destination points:
+Here is the selected source and destination points:
 
 | Source        | Destination   | 
 |:-------------:|:-------------:| 
-| 585, 460      | 320, 0        | 
-| 203, 720      | 320, 720      |
-| 1127, 720     | 960, 720      |
-| 695, 460      | 960, 0        |
+| 585, 470      | 200, 0        | 
+| 717, 470      | 200, 680      |
+| 260, 680     | 1000, 0      |
+| 1043, 680      | 1000, 680        |
 
 I verified that my perspective transform was working as expected by drawing the `src` and `dst` points 
 onto a test image and its warped counterpart to verify that the lines appear parallel in the warped image.
@@ -200,9 +200,9 @@ onto a test image and its warped counterpart to verify that the lines appear par
 
 #### 4. Describe how (and identify where in your code) you identified lane-line pixels and fit their positions with a polynomial?
 
-Since at this point we have a binary image where detected line pixels are represented as 1 we can compute 
+Since at this point we have a binary image where detected line pixels are represented as ones, we can compute 
 histogram for bottom half of the image with a sliding window method starting from bottom of image and ending at top. 
-This will give us identified line points which can be used for 2nd order polynomial fitting.
+This will give us identified line points which can be used for 2nd order polynomial fitting. This is done in `fit_polynomial()` function in my code.
 
 Here are the parameters that I used for histogram computation with sliding window method.
 
@@ -237,7 +237,7 @@ position = "left" if center < 0 else "right"
 center = "Vehicle is {:.2f}m {}".format(center, position)
 ```
 
-
+`1095.10461584 891.236232627 Vehicle is 0.36m right`
 
 
 #### 6. Provide an example image of your result plotted back down onto the road such that the lane area is identified clearly.
