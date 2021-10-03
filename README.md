@@ -300,11 +300,11 @@ Here's a [link to my video result](https://youtu.be/IvSUNDfjaII)
 
 #### 1. Briefly discuss any problems / issues you faced in your implementation of this project.  Where will your pipeline likely fail?  What could you do to make it more robust?
 
-Compared to simple lane finding project (Project-1) this pipeline work better on curved roads under different lighting conditions. However, pipeline tuning (mainly thresholding) is done only considering this video feed.
-It will probably not work well under different color lanes, at night, rain-snow or no lanes at all! And, it is very hard to generalize the tuning parameters for all possible conditions.
+Compared to simple lane finding project (Project-1) this pipeline works better on curved roads under different lighting conditions. However, pipeline tuning (mainly thresholding) is done only considering this video feed.
+It will probably not work well under different color lanes, at night, rain-snow or cases there are no lanes at all! And, it is very hard to generalize the tuning parameters for all possible conditions.
 This project was a good example for traditional computer vision implementation. For deeper and more robust perception solutions deep learning and 
 semantic segmentation could be a solution.
-One additional thing I can (maybe should) make is a sanity check for processing frames. There are cases where, thresholding may fail or polynomial may fail/poorly done which requires a sanity check in order to skip those frames and 
+One additional thing I can (maybe should) make is a sanity check for processing frames. There are cases where, thresholding may fail or polynomial fitting may fail/poorly done which requires a sanity check in order to skip those frames and 
 continue with the last good perception pipeline results. I initially created a function for this, but I did not have enough time to fully implement.
 
 Some possible sanity checks (for further use maybe):
