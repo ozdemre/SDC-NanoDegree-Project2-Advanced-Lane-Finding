@@ -3,6 +3,97 @@
 ### You can use this file as a template for your writeup if you want to submit it as a markdown file, but feel free to use some other method and submit a pdf if you prefer.
 
 ---
+## Review Update for Reviewer
+
+After submitting with settings below, I have been informed that there are some performance degradations on light colour and shadowed road parts. Here is an example given below:
+
+![alt text][image8]
+
+In order to fix it first I changed my thresholding parameters. It used to be a combination of magnitude of the gradient, direction of the gradient, and HLS color transformation with he "S" channel.
+This time I also added RGB Red channel for better performance and tuned my parameters more precisely.I tried using H channel from HLS color gradient but it didnt perform well. Here is the code snippet:
+```python
+def combined_sobel_gradient_threshold(img,s_thresh_min=170,s_thresh_max=255): #150 255
+    # Choose a Sobel kernel size
+    ksize = 9 # Choose a larger odd number to smooth gradient measurements
+    img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+    # Apply each of the thresholding functions (gradient, magnitude and direction)
+    gradx = abs_sobel_thresh(img, orient='x', sobel_kernel=ksize, thresh=(30, 100)) #20 100
+    grady = abs_sobel_thresh(img, orient='y', sobel_kernel=ksize, thresh=(30, 100)) #20 100
+    mag_binary = mag_thresh(img, sobel_kernel=ksize, mag_thresh=(70, 100)) # 30 100
+    dir_binary = dir_threshold(img, sobel_kernel=ksize, thresh=(0.7, 1.3)) # 0.7 1.3
+    
+    combined = np.zeros_like(dir_binary)
+    combined[((gradx == 1) & (grady == 1)) | ((mag_binary == 1) & (dir_binary == 1))] = 1
+    
+    # HLS Threshold
+    #img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+    hls = cv2.cvtColor(img, cv2.COLOR_RGB2HLS)
+    s_channel = hls[:,:,2]
+    h_channel = hls[:,:,0]
+    r_channel = img[:,:,0]
+
+    # Threshold color channels
+    h_thresh_min = 15 
+    h_thresh_max = 50
+    h_binary = np.zeros_like(s_channel)
+    h_binary[(h_channel >= h_thresh_min) & (h_channel <= h_thresh_max)] = 1
+
+    s_binary = np.zeros_like(s_channel)
+    s_binary[(s_channel >= s_thresh_min) & (s_channel <= s_thresh_max)] = 1
+    
+    r_thresh_min = 220
+    r_thresh_max = 255
+    r_binary = np.zeros_like(s_channel)
+    r_binary[(r_channel >= r_thresh_min) & (r_channel <= r_thresh_max)] = 1
+    
+    # Combine the two binary thresholds
+    combined_binary = np.zeros_like(combined)
+    combined_binary[(s_binary == 1)  | (r_binary == 1) | (combined == 1)] = 1 #& (h_binary == 1)
+
+    '''
+    f, (ax1, ax2, ax3, ax4, ax5, ax6) = plt.subplots(1, 6, figsize=(12, 6))
+    f.tight_layout()
+    ax1.imshow(img) # img is RGB
+    ax1.set_title('Original Image', fontsize=10)
+    ax2.imshow(combined, cmap='gray')
+    ax2.set_title('Sobel Magnitude and Direction Threshold', fontsize=10)
+    ax3.imshow(combined_binary, cmap='gray')
+    ax3.set_title('overall Threshold', fontsize=10)
+    ax4.imshow(h_binary, cmap='gray')
+    ax4.set_title('h Threshold', fontsize=10)
+    ax5.imshow(s_binary, cmap='gray')
+    ax5.set_title('s Threshold', fontsize=10)
+    ax6.imshow(r_binary, cmap='gray')
+    ax6.set_title('r Threshold', fontsize=10)
+    plt.subplots_adjust(left=0., right=1, top=0.9, bottom=0.)
+    '''
+    return combined_binary, img
+```
+
+I also added simple sanity check based on left and right curvature radius where I skip the frames less or more than given threshold and use the last frame values instead.
+Threshold values can be adjusted based on highway standards later on. Here is the code snippet.
+
+```python
+        if left_curvature < 500 or left_curvature > 8000 or right_curvature < 500 or right_curvature > 8000:
+            sanity = False
+            print('using previous frame data')
+            left_fitx = self.last_left_fitx
+            right_fitx = self.last_right_fitx 
+            left_fit = self.last_left_fit
+            right_fit = self.last_right_fitx
+            ploty = self.last_ploty
+        else:
+            sanity = True
+            self.last_left_fitx = left_fitx
+            self.last_right_fitx = right_fitx
+            self.last_left_fit = left_fit
+            self.last_right_fit = right_fit
+            self.last_ploty = ploty
+```
+
+After adapting this changes here is my latest output video [latest output video](https://youtu.be/NZ5RLzFRctw) from the pipeline, hope this time works :)
+
+
 
 **Advanced Lane Finding Project**
 
@@ -26,6 +117,7 @@ The goals / steps of this project are the following:
 [image5]: ./output_images/polynomial_fit.png "Polynomial Fit"
 [image6]: ./output_images/radius_of_curvature.png "Reference image"
 [image7]: ./output_images/draw_on_image.png "Final image"
+[image7]: ./output_images/performance_degradation.jpg "Final image"
 
 [video1]: ./project_video.mp4 "Video"
 
@@ -174,7 +266,7 @@ def combined_sobel_gradient_threshold(img,s_thresh_min=150,s_thresh_max=255):
 
 Here I basically applied the magnitude and direction threshold functions with the parameters that I used in the classroom quizzes. Then I also applied HLS thresholding for accounting different light condition.
 
-After trying different configurations I have used gradient on x and y direction, manginutude of the gradient, direction of the gradient, and color transformation technique to get the final binary image.
+After trying different configurations I have used gradient on x and y direction, magnitude of the gradient, direction of the gradient, and color transformation technique to get the final binary image.
 ![alt text][image3]
 
 #### 3. Describe how (and identify where in your code) you performed a perspective transform and provide an example of a transformed image.
