@@ -117,7 +117,7 @@ The goals / steps of this project are the following:
 [image5]: ./output_images/polynomial_fit.png "Polynomial Fit"
 [image6]: ./output_images/radius_of_curvature.png "Reference image"
 [image7]: ./output_images/draw_on_image.png "Final image"
-[image7]: ./output_images/performance_degradation.jpg "Final image"
+[image8]: ./output_images/performance_degradation.jpg "Final image"
 
 [video1]: ./project_video.mp4 "Video"
 
