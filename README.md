@@ -9,8 +9,8 @@ After submitting with settings below, I have been informed that there are some p
 
 ![alt text][image8]
 
-In order to fix it first I changed my thresholding parameters. It used to be a combination of magnitude of the gradient, direction of the gradient, and HLS color transformation with he "S" channel.
-This time I also added RGB Red channel for better performance and tuned my parameters more precisely.I tried using H channel from HLS color gradient but it didnt perform well. Here is the code snippet:
+In order to fix it first I changed my thresholding parameters. It used to be a combination of magnitude of the gradient, direction of the gradient, and HLS color transformation with the "S" channel.
+This time I also added RGB Red channel for better performance and tuned my parameters more precisely. I tried using H channel from HLS color gradient but it didnt perform well. Here is the code snippet:
 ```python
 def combined_sobel_gradient_threshold(img,s_thresh_min=170,s_thresh_max=255): #150 255
     # Choose a Sobel kernel size
@@ -70,7 +70,7 @@ def combined_sobel_gradient_threshold(img,s_thresh_min=170,s_thresh_max=255): #1
     return combined_binary, img
 ```
 
-I also added simple sanity check based on left and right curvature radius where I skip the frames less or more than given threshold and use the last frame values instead.
+I also added simple sanity check to my `ProcessLine()` class, based on left and right curvature radius where I skip the frames less or more than given threshold and use the last frame values instead.
 Threshold values can be adjusted based on highway standards later on. Here is the code snippet.
 
 ```python
@@ -91,7 +91,7 @@ Threshold values can be adjusted based on highway standards later on. Here is th
             self.last_ploty = ploty
 ```
 
-After adapting this changes here is my latest output video [latest output video](https://youtu.be/NZ5RLzFRctw) from the pipeline, hope this time works :)
+After adapting this changes here is my [latest output video](https://youtu.be/NZ5RLzFRctw) from the pipeline, hope this time works :)
 
 
 
